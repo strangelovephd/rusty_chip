@@ -1,0 +1,9 @@
+[package]
+name = "rusty_chip8"
+version = "0.1.0"
+authors = ["wesle"]
+edition = "2018"
+
+[dependencies]
+piston_window = "0.74"
+rand = "0.6.1"

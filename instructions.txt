@@ -1,0 +1,75 @@
+00E0 - CLS
+00EE - RET
+0nnn - SYS addr
+1nnn - JP addr
+2nnn - CALL addr
+3xkk - SE Vx, byte
+4xkk - SNE Vx, byte
+5xy0 - SE Vx, Vy
+6xkk - LD Vx, byte
+7xkk - ADD Vx, byte
+8xy0 - LD Vx, Vy
+8xy1 - OR Vx, Vy
+8xy2 - AND Vx, Vy
+8xy3 - XOR Vx, Vy
+8xy4 - ADD Vx, Vy
+8xy5 - SUB Vx, Vy
+8xy6 - SHR Vx {, Vy}
+8xy7 - SUBN Vx, Vy
+8xyE - SHL Vx {, Vy}
+9xy0 - SNE Vx, Vy
+Annn - LD I, addr
+Bnnn - JP V0, addr
+Cxkk - RND Vx, byte
+Dxyn - DRW Vx, Vy, nibble
+Ex9E - SKP Vx
+ExA1 - SKNP Vx
+Fx07 - LD Vx, DT
+Fx0A - LD Vx, K
+Fx15 - LD DT, Vx
+Fx18 - LD ST, Vx
+Fx1E - ADD I, Vx
+Fx29 - LD F, Vx
+Fx33 - LD B, Vx
+Fx55 - LD [I], Vx
+Fx65 - LD Vx, [I]
+
+
+        match code {
+            c if (c & 0x00E0) == 0x00E0 => Instruction::CLS(c),
+            c if (c & 0x00EE) == 0x00EE => Instruction::RET(c),
+            c if (c & 0x0000) == 0x0000 => Instruction::SYS(c),
+            c if (c & 0x1000) == 0x1000 => Instruction::JP(c),
+            c if (c & 0x2000) == 0x2000 => Instruction::CALL(c),
+            c if (c & 0x3000) == 0x3000 => Instruction::SEVxb(c),
+            c if (c & 0x4000) == 0x4000 => Instruction::SNE(c),
+            c if (c & 0x5000) == 0x5000 => Instruction::SE(c),
+            c if (c & 0x6000) == 0x6000 => Instruction::LDVxb(c),
+            c if (c & 0x7000) == 0x7000 => Instruction::ADDVxb(c),
+            c if (c & 0x8000) == 0x8000 => Instruction::LDVxVy(c),
+            c if (c & 0x8001) == 0x8001 => Instruction::OR(c),
+            c if (c & 0x8002) == 0x8002 => Instruction::AND(c),
+            c if (c & 0x8003) == 0x8003 => Instruction::XOR(c),
+            c if (c & 0x8004) == 0x8004 => Instruction::ADDVxVy(c),
+            c if (c & 0x8005) == 0x8005 => Instruction::SUB(c),
+            c if (c & 0x8006) == 0x8006 => Instruction::SHR(c),
+            c if (c & 0x8007) == 0x8007 => Instruction::SUBN(c),
+            c if (c & 0x800E) == 0x800E => Instruction::SHL(c),
+            c if (c & 0x9000) == 0x9000 => Instruction::SNEVxVy(c),
+            c if (c & 0xA000) == 0xA000 => Instruction::LDIAddr(c),
+            c if (c & 0xB000) == 0xB000 => Instruction::JPV0Addr(c),
+            c if (c & 0xC000) == 0xC000 => Instruction::RND(c),
+            c if (c & 0xD000) == 0xD000 => Instruction::DRW(c),
+            c if (c & 0xE09E) == 0xE09E => Instruction::SKP(c),
+            c if (c & 0xE0A1) == 0xE0A1 => Instruction::SKNP(c),
+            c if (c & 0xF007) == 0xF007 => Instruction::LDVxDT(c),
+            c if (c & 0xF00A) == 0xF00A => Instruction::LDVxK(c),
+            c if (c & 0xF015) == 0xF015 => Instruction::LDDTVx(c),
+            c if (c & 0xF018) == 0xF018 => Instruction::LDSTVx(c),
+            c if (c & 0xF01E) == 0xF01E => Instruction::ADDIVx(c),
+            c if (c & 0xF029) == 0xF029 => Instruction::LDFVx(c),
+            c if (c & 0xF033) == 0xF033 => Instruction::LDBVx(c),
+            c if (c & 0xF055) == 0xF055 => Instruction::LDIVx(c),
+            c if (c & 0xF065) == 0xF065 => Instruction::LDVxI(c),
+            _ => Instruction::None,
+        }

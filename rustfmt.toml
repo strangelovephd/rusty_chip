@@ -1,0 +1,17 @@
+comment_width = 120
+error_on_line_overflow = true
+format_strings = true
+format_macro_matchers = true
+max_width = 120
+force_multiline_blocks = true
+newline_style = "Unix"
+normalize_comments = true
+reorder_imports = false
+reorder_modules = false
+reorder_impl_items = true
+report_todo = "Unnumbered"
+report_fixme = "Unnumbered"
+use_field_init_shorthand = true
+use_try_shorthand = true
+format_doc_comments = true
+wrap_comments = true
