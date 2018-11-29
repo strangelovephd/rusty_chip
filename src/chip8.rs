@@ -20,6 +20,7 @@ use std::path::PathBuf;
 type opcode = u16;
 
 const VFLAG: usize = 15;
+const PERIOD: f64 = 1.0;
 
 const FONTSET: [u8; 80] = [
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -50,6 +51,7 @@ pub struct Chip {
     timer_delay: u8,
     timer_sound: u8,
     key: [bool; 16],
+    cycle: f64,
 }
 
 impl Chip {
@@ -64,6 +66,7 @@ impl Chip {
             timer_delay: 0,
             timer_sound: 0,
             key: [false; 16],
+            cycle: 0.0,
         };
 
         // Open up program file path and file
@@ -79,9 +82,9 @@ impl Chip {
             Ok(_) => println!("Successful read."),
         }
 
-        //for x in 0x200..0xFFF {
-        //    print!("{}", chip.mem[x]);
-        //}
+        for x in 0x200..0xFFF {
+            print!("{:02X}", chip.mem[x]);
+        }
 
         // Load fontset
         for i in 0..80 {
@@ -92,7 +95,7 @@ impl Chip {
     }
 
     // Emulates one cycle of the Chip-8 CPU
-    fn cycle(&mut self) {
+    pub fn cycle(&mut self) {
         // fetch opcode
         let operation: opcode = (self.mem[self.program_counter] as u16) << 8
             | (self.mem[self.program_counter + 1] as u16); // Have to cast bytes as u16 to satisfy Rust's type requirements
@@ -255,6 +258,8 @@ impl Chip {
         if self.timer_sound > 0 {
             self.timer_sound -= 1;
         }
+        
+        self.cycle = 0.0;
     }
 
     pub fn picture_test(&mut self, x: usize, y: usize) {
@@ -275,7 +280,10 @@ impl Chip {
  //   }
 
     pub fn update(&mut self, delta_time: f64) {
-        self.cycle();
+        self.cycle += delta_time;
+        if self.cycle > PERIOD {
+            self.cycle();
+        }
     }
 
     pub fn run(&self, con: &Context, g: &mut G2d) {}
@@ -289,5 +297,10 @@ mod tests {
     #[test]
     fn dumb_shift_test() {
         assert_eq!(2, 4 >> 1)
+    }
+
+    #[test]
+    fn instruction_test() {
+        
     }
 }

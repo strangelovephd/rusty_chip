@@ -1,0 +1,1 @@
+{"rustc":6590430198057108641,"features":"[]","target":18020314856449668265,"profile":5903626576182300732,"path":1036222786711178230,"deps":[["piston_window v0.74.0","piston_window",1139770851371369928]],"local":[{"MtimeBased":[[1543153161,990341200],".fingerprint\\rusty_chip8-8ceee3833213d8cf\\dep-bin-rusty_chip8-8ceee3833213d8cf"]}],"rustflags":[],"edition":"Edition2018"}
