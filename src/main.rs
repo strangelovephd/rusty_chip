@@ -29,10 +29,6 @@ fn main() {
 
     let mut chip = Chip::new(args[1].as_str());
 
-    for x in 30..40 {
-        chip.picture_test(x, 15);
-    }
-
     while let Some(event) = window.next() {
         if let Some(Button::Keyboard(key)) = event.press_args() {
             chip.key_pressed(key);
@@ -40,7 +36,7 @@ fn main() {
 
         window.draw_2d(&event, |c, g| {
             clear(BLACK, g);
-            chip.draw(&c, g);
+            chip.display.draw(&c, g);
         });
 
         event.update(|arg| {

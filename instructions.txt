@@ -34,42 +34,81 @@ Fx33 - LD B, Vx
 Fx55 - LD [I], Vx
 Fx65 - LD Vx, [I]
 
+match code {
+    c if (c & 0x00E0) == 0x00E0 => Instruction::CLS(c),
+    c if (c & 0x00EE) == 0x00EE => Instruction::RET(c),
+    c if (c & 0x0000) == 0x0000 => Instruction::SYS(c),
+    c if (c & 0x1000) == 0x1000 => Instruction::JP(c),
+    c if (c & 0x2000) == 0x2000 => Instruction::CALL(c),
+    c if (c & 0x3000) == 0x3000 => Instruction::SEVxb(c),
+    c if (c & 0x4000) == 0x4000 => Instruction::SNE(c),
+    c if (c & 0x5000) == 0x5000 => Instruction::SE(c),
+    c if (c & 0x6000) == 0x6000 => Instruction::LDVxb(c),
+    c if (c & 0x7000) == 0x7000 => Instruction::ADDVxb(c),
+    c if (c & 0x8000) == 0x8000 => Instruction::LDVxVy(c),
+    c if (c & 0x8001) == 0x8001 => Instruction::OR(c),
+    c if (c & 0x8002) == 0x8002 => Instruction::AND(c),
+    c if (c & 0x8003) == 0x8003 => Instruction::XOR(c),
+    c if (c & 0x8004) == 0x8004 => Instruction::ADDVxVy(c),
+    c if (c & 0x8005) == 0x8005 => Instruction::SUB(c),
+    c if (c & 0x8006) == 0x8006 => Instruction::SHR(c),
+    c if (c & 0x8007) == 0x8007 => Instruction::SUBN(c),
+    c if (c & 0x800E) == 0x800E => Instruction::SHL(c),
+    c if (c & 0x9000) == 0x9000 => Instruction::SNEVxVy(c),
+    c if (c & 0xA000) == 0xA000 => Instruction::LDIAddr(c),
+    c if (c & 0xB000) == 0xB000 => Instruction::JPV0Addr(c),
+    c if (c & 0xC000) == 0xC000 => Instruction::RND(c),
+    c if (c & 0xD000) == 0xD000 => Instruction::DRW(c),
+    c if (c & 0xE09E) == 0xE09E => Instruction::SKP(c),
+    c if (c & 0xE0A1) == 0xE0A1 => Instruction::SKNP(c),
+    c if (c & 0xF007) == 0xF007 => Instruction::LDVxDT(c),
+    c if (c & 0xF00A) == 0xF00A => Instruction::LDVxK(c),
+    c if (c & 0xF015) == 0xF015 => Instruction::LDDTVx(c),
+    c if (c & 0xF018) == 0xF018 => Instruction::LDSTVx(c),
+    c if (c & 0xF01E) == 0xF01E => Instruction::ADDIVx(c),
+    c if (c & 0xF029) == 0xF029 => Instruction::LDFVx(c),
+    c if (c & 0xF033) == 0xF033 => Instruction::LDBVx(c),
+    c if (c & 0xF055) == 0xF055 => Instruction::LDIVx(c),
+    c if (c & 0xF065) == 0xF065 => Instruction::LDVxI(c),
+    _ => Instruction::None,
+}
 
-        match code {
-            c if (c & 0x00E0) == 0x00E0 => Instruction::CLS(c),
-            c if (c & 0x00EE) == 0x00EE => Instruction::RET(c),
-            c if (c & 0x0000) == 0x0000 => Instruction::SYS(c),
-            c if (c & 0x1000) == 0x1000 => Instruction::JP(c),
-            c if (c & 0x2000) == 0x2000 => Instruction::CALL(c),
-            c if (c & 0x3000) == 0x3000 => Instruction::SEVxb(c),
-            c if (c & 0x4000) == 0x4000 => Instruction::SNE(c),
-            c if (c & 0x5000) == 0x5000 => Instruction::SE(c),
-            c if (c & 0x6000) == 0x6000 => Instruction::LDVxb(c),
-            c if (c & 0x7000) == 0x7000 => Instruction::ADDVxb(c),
-            c if (c & 0x8000) == 0x8000 => Instruction::LDVxVy(c),
-            c if (c & 0x8001) == 0x8001 => Instruction::OR(c),
-            c if (c & 0x8002) == 0x8002 => Instruction::AND(c),
-            c if (c & 0x8003) == 0x8003 => Instruction::XOR(c),
-            c if (c & 0x8004) == 0x8004 => Instruction::ADDVxVy(c),
-            c if (c & 0x8005) == 0x8005 => Instruction::SUB(c),
-            c if (c & 0x8006) == 0x8006 => Instruction::SHR(c),
-            c if (c & 0x8007) == 0x8007 => Instruction::SUBN(c),
-            c if (c & 0x800E) == 0x800E => Instruction::SHL(c),
-            c if (c & 0x9000) == 0x9000 => Instruction::SNEVxVy(c),
-            c if (c & 0xA000) == 0xA000 => Instruction::LDIAddr(c),
-            c if (c & 0xB000) == 0xB000 => Instruction::JPV0Addr(c),
-            c if (c & 0xC000) == 0xC000 => Instruction::RND(c),
-            c if (c & 0xD000) == 0xD000 => Instruction::DRW(c),
-            c if (c & 0xE09E) == 0xE09E => Instruction::SKP(c),
-            c if (c & 0xE0A1) == 0xE0A1 => Instruction::SKNP(c),
-            c if (c & 0xF007) == 0xF007 => Instruction::LDVxDT(c),
-            c if (c & 0xF00A) == 0xF00A => Instruction::LDVxK(c),
-            c if (c & 0xF015) == 0xF015 => Instruction::LDDTVx(c),
-            c if (c & 0xF018) == 0xF018 => Instruction::LDSTVx(c),
-            c if (c & 0xF01E) == 0xF01E => Instruction::ADDIVx(c),
-            c if (c & 0xF029) == 0xF029 => Instruction::LDFVx(c),
-            c if (c & 0xF033) == 0xF033 => Instruction::LDBVx(c),
-            c if (c & 0xF055) == 0xF055 => Instruction::LDIVx(c),
-            c if (c & 0xF065) == 0xF065 => Instruction::LDVxI(c),
-            _ => Instruction::None,
-        }
+#[derive(Debug, Eq, PartialEq)]
+pub enum Instruction {
+    CLS(opcode),        //  00E0 - CLS
+    RET(opcode),        //  00EE - RET
+    SYS(opcode),        //  0nnn - SYS addr
+    JP(opcode),         //  1nnn - JP addr
+    CALL(opcode),       //  2nnn - CALL addr
+    SEVxb(opcode),      //  3xkk - SE Vx, byte
+    SNE(opcode),        //  4xkk - SNE Vx, byte
+    SE(opcode),         //  5xy0 - SE Vx, Vy
+    LDVxb(opcode),      //  6xkk - LD Vx, byte
+    ADDVxb(opcode),     //  7xkk - ADD Vx, byte
+    LDVxVy(opcode),     //  8xy0 - LD Vx, Vy
+    OR(opcode),         //  8xy1 - OR Vx, Vy
+    AND(opcode),        //  8xy2 - AND Vx, Vy
+    XOR(opcode),        //  8xy3 - XOR Vx, Vy
+    ADDVxVy(opcode),    //  8xy4 - ADD Vx, Vy
+    SUB(opcode),        //  8xy5 - SUB Vx, Vy
+    SHR(opcode),        //  8xy6 - SHR Vx {, Vy}
+    SUBN(opcode),       //  8xy7 - SUBN Vx, Vy
+    SHL(opcode),        //  8xyE - SHL Vx {, Vy}
+    SNEVxVy(opcode),    //  9xy0 - SNE Vx, Vy
+    LDIAddr(opcode),    //  Annn - LD I, addr
+    JPV0Addr(opcode),   //  Bnnn - JP V0, addr
+    RND(opcode),        //  Cxkk - RND Vx, byte
+    DRW(opcode),        //  Dxyn - DRW Vx, Vy, nibble
+    SKP(opcode),        //  Ex9E - SKP Vx
+    SKNP(opcode),       //  ExA1 - SKNP Vx
+    LDVxDT(opcode),     //  Fx07 - LD Vx, DT
+    LDVxK(opcode),      //  Fx0A - LD Vx, K
+    LDDTVx(opcode),     //  Fx15 - LD DT, Vx
+    LDSTVx(opcode),     //  Fx18 - LD ST, Vx
+    ADDIVx(opcode),     //  Fx1E - ADD I, Vx
+    LDFVx(opcode),      //  Fx29 - LD F, Vx
+    LDBVx(opcode),      //  Fx33 - LD B, Vx
+    LDIVx(opcode),      //  Fx55 - LD [I], Vx
+    LDVxI(opcode),      //  Fx65 - LD Vx, [I]
+    None,
+}
