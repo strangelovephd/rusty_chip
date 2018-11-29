@@ -34,6 +34,8 @@ fn main() {
             chip.key_pressed(key);
         }
 
+        chip.display.mem[15][24] = 0x01;
+        
         window.draw_2d(&event, |c, g| {
             clear(BLACK, g);
             chip.display.draw(&c, g);
