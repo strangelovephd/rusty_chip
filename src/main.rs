@@ -15,11 +15,6 @@ use std::env;
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    if args.len() < 2 {
-        print!("No Chip8 program entered\n\nExiting...");
-        return
-    }
-
     let (width, height) = (64, 32);
 
     let mut window: PistonWindow = WindowSettings::new("Chip8 Emulator", [width * (BLOCK_SIZE as u32), height * (BLOCK_SIZE as u32)])
@@ -27,7 +22,13 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut chip = Chip::new(args[1].as_str());
+    let mut chip = Chip::new();
+
+    if args.len() < 2 {
+        chip.load_rom("programs/Life.ch8").expect("Unable to load ROM");
+    } else {
+        chip.load_rom(args[1].as_str()).expect("Unable to load ROM");
+    }
 
     while let Some(event) = window.next() {
         if let Some(Button::Keyboard(key)) = event.press_args() {
@@ -35,7 +36,7 @@ fn main() {
         }
 
         chip.display.mem[15][24] = 0x01;
-        
+
         window.draw_2d(&event, |c, g| {
             clear(BLACK, g);
             chip.display.draw(&c, g);

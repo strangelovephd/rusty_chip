@@ -55,7 +55,7 @@ pub struct Chip {
 }
 
 impl Chip {
-    pub fn new(program: &str) -> Chip {
+    pub fn new() -> Chip {
         let mut chip = Chip {
             registers: [0; 16],
             stack: Stack::new(),
@@ -69,23 +69,6 @@ impl Chip {
             cycle: 0.0,
         };
 
-        // Open up program file path and file
-        let prog_path = PathBuf::from(program);
-        let mut input_stream = match File::open(prog_path.as_path()) {
-            Err(e) => panic!("Couldn't open Chip8 program: {}", e.description()),
-            Ok(stream) => stream,
-        };
-
-        // Load program
-        match input_stream.read(&mut chip.mem[0x200..0xFFF]) {
-            Err(e) => panic!("Couldn't read Chip8 program: {}", e.description()),
-            Ok(_) => println!("Successful read."),
-        }
-
-        for x in 0x200..0xFFF {
-            print!("{:02X}", chip.mem[x]);
-        }
-
         // Load fontset
         for i in 0..80 {
             chip.mem[i] = FONTSET[i];
@@ -94,19 +77,40 @@ impl Chip {
         chip
     }
 
+    pub fn load_rom(&mut self, rom: &str) -> Result<(), &str> {
+        // Open up rom file path and file
+        let prog_path = PathBuf::from(rom);
+        let mut input_stream = match File::open(prog_path.as_path()) {
+            Err(e) => panic!("Couldn't open Chip8 program: {}", e.description()),
+            Ok(stream) => stream,
+        };
+
+        // Load program
+        match input_stream.read(&mut self.mem[0x200..0xFFF]) {
+            Err(e) => panic!("Couldn't read Chip8 program: {}", e.description()),
+            Ok(_) => println!("Successful read."),
+        }
+
+//        for x in 0x200..0xFFF {
+//            print!("{:02X}", self.mem[x]);
+//        }
+
+        Ok(())
+    }
+
     // Emulates one cycle of the Chip-8 CPU
     pub fn cycle(&mut self) {
         // fetch opcode
         let operation: opcode = (self.mem[self.program_counter] as u16) << 8
             | (self.mem[self.program_counter + 1] as u16); // Have to cast bytes as u16 to satisfy Rust's type requirements
-//            print!("Opcode: {:X}", operation);
+        print!("Opcode: {:X}", operation);
 
         // decode operation
         let n1 = (operation & 0xF000) >> 12;    //  Opcodes can be split up as OXYN where typically
         let n2 = (operation & 0x0F00) >> 8;     //  O = operation, X, Y, N = sub operation, byte, etc
         let n3 = (operation & 0x00F0) >> 4;     //  by splitting the opcode up into nibbles, we can match
         let n4 = operation & 0x000F;            //  via tuple when we decode: (n1, n2, n3, n4)
-//        println!("\tNibbles: {:X} : {:X} : {:X} : {:X}", n1, n2, n3, n4);
+        println!("\tNibbles: {:X} : {:X} : {:X} : {:X}", n1, n2, n3, n4);
 
         let nnn = (operation & 0x0FFF) as usize;
         let x = ((operation & 0x0F00) >> 8) as u8;
@@ -115,7 +119,7 @@ impl Chip {
         let Vy = ((operation & 0x00F0) >> 4) as usize;
         let kk = (operation & 0x00FF) as u8;
         let n = (operation & 0x000F) as u8;
-//        println!("nnn: {:X} x: {:X} y: {:X} Vx: {:X} Vy: {:X} kk: {:X} n: {:X}", nnn, x, y, Vx, Vy, kk, n);
+        //println!("nnn: {:X} x: {:X} y: {:X} Vx: {:X} Vy: {:X} kk: {:X} n: {:X}", nnn, x, y, Vx, Vy, kk, n);
 
         // update program_counter
         self.program_counter += 2;
@@ -265,19 +269,6 @@ impl Chip {
     pub fn picture_test(&mut self, x: usize, y: usize) {
         self.display.mem[x][y] = 0x1;
     }
-
- //   pub fn draw(&self, x: usize, y: usize, sprite: &[u8], con: &Context, g: &mut G2d) {
- //       for x in 0..64 {
- //           for y in 0..32 {
- //               //println!("x: {} y: {}", x, y);
- //               if self.display.mem[x][y] != 0x0 {
- //                   draw_block(BLACK, x as i32, y as i32, con, g);
- //               } else {
- //                   draw_block(WHITE, x as i32, y as i32, con, g);
- //               }
- //           }
- //       }
- //   }
 
     pub fn update(&mut self, delta_time: f64) {
         self.cycle += delta_time;
